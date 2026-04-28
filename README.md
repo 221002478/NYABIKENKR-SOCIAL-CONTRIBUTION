@@ -1,10 +1,9 @@
 
-<!DOCTYPE html>
 <html>
 <head>
     <title>NYABIKENKE SOCIAL CONTRIBUTION </title>
 <h3>NSC - Nyabikenke Social Contribution</h3>
-<p>Track your monthly contributions, savings, and financial records easily.</p>
+<p>MURAKAZA NEZA KURUBUGA AHO GUTANGA UMUSANZU ARINSHINGANO ZACU TWESE.</p>
 </head>
 <body>
 
