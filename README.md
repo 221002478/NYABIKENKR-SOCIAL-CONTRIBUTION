@@ -149,11 +149,177 @@ function loadDashboard() {
     showPage("dashboardPage");
 }
 
-// ===================== LOGOUT =====================
-function logout() {
-    localStorage.removeItem("currentUser");
-    showPage("loginPage");
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NSC Dashboard</title>
+
+    <style>
+        /* ===== BASIC LAYOUT ===== */
+        body {
+            font-family: Arial;
+            margin: 0;
+            display: flex;
+        }
+
+        /* ===== SIDEBAR MENU ===== */
+        .sidebar {
+            width: 220px;
+            background: #1e3a8a;
+            color: white;
+            height: 100vh;
+            padding: 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .menu button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .card {
+            padding: 15px;
+            margin-top: 10px;
+            background: #f3f4f6;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <h2>NSC</h2>
+
+    <p id="user"></p>
+
+    <div class="menu">
+        <button onclick="showSection('home')">Dashboard</button>
+        <button onclick="showSection('finance')">Finance Tracker</button>
+        <button onclick="showSection('accounts')">Accounts</button>
+        <button onclick="showSection('reports')">Monthly Reports</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="main">
+
+    <!-- HOME -->
+    <div id="home">
+        <h2>Welcome to NSC Dashboard</h2>
+        <div class="card">
+            <p>Track your contributions, savings, and financial activities.</p>
+        </div>
+    </div>
+
+    <!-- FINANCE -->
+    <div id="finance" style="display:none;">
+        <h2>Finance Tracker</h2>
+
+        <input type="text" id="desc" placeholder="Description"><br><br>
+        <input type="number" id="amount" placeholder="Amount"><br><br>
+
+        <button onclick="addFinance()">Add</button>
+
+        <ul id="financeList"></ul>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div id="accounts" style="display:none;">
+        <h2>Accounts</h2>
+
+        <div class="card">Cash</div>
+        <div class="card">Bank</div>
+        <div class="card">Mobile Money</div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="reports" style="display:none;">
+        <h2>Monthly Reports</h2>
+
+        <div class="card">
+            <p>Coming soon: monthly summaries and analytics</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+// ================= CHECK LOGIN =================
+let currentUser = localStorage.getItem("NSC_currentUser");
+
+if (!currentUser) {
+    window.location.href = "index.html";
 }
+
+document.getElementById("user").innerText = "User: " + currentUser;
+
+// ================= NAVIGATION =================
+function showSection(section) {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("finance").style.display = "none";
+    document.getElementById("accounts").style.display = "none";
+    document.getElementById("reports").style.display = "none";
+
+    document.getElementById(section).style.display = "block";
+}
+
+// ================= FINANCE (SIMPLE STORAGE) =================
+let data = JSON.parse(localStorage.getItem("NSC_finance")) || [];
+
+function addFinance() {
+    let desc = document.getElementById("desc").value;
+    let amount = document.getElementById("amount").value;
+
+    data.push({
+        user: currentUser,
+        desc: desc,
+        amount: amount
+    });
+
+    localStorage.setItem("NSC_finance", JSON.stringify(data));
+
+    displayFinance();
+}
+
+function displayFinance() {
+    let list = document.getElementById("financeList");
+    list.innerHTML = "";
+
+    data.filter(d => d.user === currentUser).forEach(item => {
+        let li = document.createElement("li");
+        li.innerText = item.desc + " : " + item.amount;
+        list.appendChild(li);
+    });
+}
+
+// ================= LOGOUT =================
+function logout() {
+    localStorage.removeItem("NSC_currentUser");
+    window.location.href = "index.html";
+}
+
+// load finance on start
+displayFinance();
+
+</script>
+
+</body>
+</html>
 
 // ===================== AUTO LOGIN =====================
 // When page loads, check if user is already logged in
