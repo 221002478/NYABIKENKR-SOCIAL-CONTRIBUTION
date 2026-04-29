@@ -1,281 +1,237 @@
-
+<!DOCTYPE html>
 <html>
 <head>
     <title>NSC - Nyabikenke Social Contribution</title>
 
     <style>
-        /* ===================== BASIC DESIGN ===================== */
-        body {
-            font-family: Arial;
-            margin: 0;
+        body { font-family: Arial; margin:0; }
+
+        .container { padding:20px; }
+
+        input { padding:8px; margin:5px; width:200px; }
+
+        button { padding:8px 12px; margin:5px; cursor:pointer; }
+
+        .hidden { display:none; }
+
+        /* Sidebar */
+        .sidebar {
+            width:200px;
+            background:#1e3a8a;
+            color:white;
+            height:100vh;
+            float:left;
+            padding:10px;
         }
 
-        /* ===================== LOGIN / FORMS ===================== */
-        .container {
-            width: 300px;
-            margin: 80px auto;
+        .main {
+            margin-left:210px;
+            padding:20px;
         }
 
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
+        .card {
+            background:#f3f4f6;
+            padding:10px;
+            margin:10px 0;
         }
-
-        button {
-            cursor: pointer;
-        }
+    </style>
 </head>
 
 <body>
 
-<!-- ========================================================= -->
-<!-- ===================== LOGIN PAGE ======================== -->
-<!-- ========================================================= -->
-<div id="loginPage" class="container">
+<!-- ================= LOGIN / REGISTER ================= -->
+<div id="auth" class="container">
 
-    <h2>NSC Login</h2>
+    <h2>NSC System</h2>
 
-    <input type="text" id="loginUser" placeholder="Username">
-    <input type="password" id="loginPass" placeholder="Password">
-
+    <h3>Login</h3>
+    <input id="loginUser" placeholder="Username"><br>
+    <input id="loginPass" type="password" placeholder="Password"><br>
     <button onclick="login()">Login</button>
 
-    <p>
-        <a href="#" onclick="showPage('registerPage')">Create Account</a> |
-        <a href="#" onclick="showPage('forgotPage')">Forgot Password</a>
-    </p>
-
-</div>
-
-<!-- ========================================================= -->
-<!-- ===================== REGISTER PAGE ===================== -->
-<!-- ========================================================= -->
-<div id="registerPage" class="container" style="display:none;">
-
-    <h2>Create Account</h2>
-
-    <input type="text" id="regUser" placeholder="Username">
-    <input type="password" id="regPass" placeholder="Password">
-
+    <h3>Create Account</h3>
+    <input id="regUser" placeholder="Username"><br>
+    <input id="regPass" type="password" placeholder="Password"><br>
     <button onclick="register()">Register</button>
 
-    <p><a href="#" onclick="showPage('loginPage')">Back to Login</a></p>
-
 </div>
 
-<!-- ========================================================= -->
-<!-- ===================== FORGOT PASSWORD =================== -->
-<!-- ========================================================= -->
-<div id="forgotPage" class="container" style="display:none;">
-
-    <h2>Reset Password</h2>
-
-    <input type="text" id="fpUser" placeholder="Username">
-    <input type="password" id="fpPass" placeholder="New Password">
-
-    <button onclick="resetPassword()">Reset</button>
-
-    <p><a href="#" onclick="showPage('loginPage')">Back</a></p>
-
-</div>
-
-<!-- ========================================================= -->
-<!-- ===================== DASHBOARD ========================= -->
-<!-- ========================================================= -->
-<div id="dashboard" style="display:none;" class="app">
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard" class="hidden">
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>NSC</h2>
+        <h3>NSC</h3>
+        <p id="currentUser"></p>
 
-        <p id="userInfo"></p>
-
-        <button onclick="showSection('home')">Dashboard</button>
-        <button onclick="showSection('finance')">Finance</button>
-        <button onclick="showSection('accounts')">Accounts</button>
-        <button onclick="showSection('reports')">Reports</button>
+        <button onclick="show('home')">Home</button>
+        <button onclick="show('finance')">Finance</button>
+        <button onclick="show('payments')">Payments</button>
         <button onclick="logout()">Logout</button>
     </div>
 
-    <!-- Main content -->
+    <!-- Main -->
     <div class="main">
 
-        <!-- ================= HOME ================= -->
-        <div id="homeSection">
-            <h2>Welcome to NSC System</h2>
-            <div class="card">
-                Community Social Contribution & Finance Tracking System
-            </div>
+        <!-- HOME -->
+        <div id="home">
+            <h2>Welcome</h2>
+            <div class="card">Manage your monthly contributions</div>
         </div>
 
-        <!-- ================= FINANCE ================= -->
-        <div id="financeSection" style="display:none;">
+        <!-- FINANCE -->
+        <div id="finance" class="hidden">
             <h2>Finance Tracker</h2>
 
-            <input type="text" id="desc" placeholder="Description">
-            <input type="number" id="amount" placeholder="Amount">
-
+            <input id="desc" placeholder="Description">
+            <input id="amount" type="number" placeholder="Amount">
             <button onclick="addFinance()">Add</button>
 
             <ul id="financeList"></ul>
         </div>
 
-        <!-- ================= ACCOUNTS ================= -->
-        <div id="accountsSection" style="display:none;">
-            <h2>Accounts</h2>
-
-            <div class="card">Cash Account</div>
-            <div class="card">Bank Account</div>
-            <div class="card">Mobile Money</div>
-        </div>
-
-        <!-- ================= REPORTS ================= -->
-        <div id="reportsSection" style="display:none;">
-            <h2>Monthly Reports</h2>
-
-            <div class="card">
-                Reports and analytics coming soon...
-            </div>
+        <!-- PAYMENTS -->
+        <div id="payments" class="hidden">
+            <h2>Monthly Contributions</h2>
+            <div id="months"></div>
         </div>
 
     </div>
 </div>
 
-<!-- ========================================================= -->
-<!-- ===================== JAVASCRIPT ======================== -->
-<!-- ========================================================= -->
 <script>
 
-    /* ===================== PAGE NAVIGATION ===================== */
-    function showPage(page) {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("registerPage").style.display = "none";
-        document.getElementById("forgotPage").style.display = "none";
-        document.getElementById("dashboard").style.display = "none";
+// ================= USERS STORAGE =================
+let users = JSON.parse(localStorage.getItem("users")) || [];
 
-        document.getElementById(page).style.display = "block";
-    }
+// ================= REGISTER =================
+function register(){
+    let u = regUser.value;
+    let p = regPass.value;
 
-    /* ===================== DASHBOARD SECTIONS ===================== */
-    function showSection(section) {
-        document.getElementById("homeSection").style.display = "none";
-        document.getElementById("financeSection").style.display = "none";
-        document.getElementById("accountsSection").style.display = "none";
-        document.getElementById("reportsSection").style.display = "none";
+    users.push({username:u, password:p});
+    localStorage.setItem("users", JSON.stringify(users));
 
-        document.getElementById(section + "Section").style.display = "block";
-    }
+    alert("Account created!");
+}
 
-    /* ===================== REGISTER ===================== */
-    function register() {
-        let u = document.getElementById("regUser").value;
-        let p = document.getElementById("regPass").value;
+// ================= LOGIN =================
+function login(){
+    let u = loginUser.value;
+    let p = loginPass.value;
 
-        let users = JSON.parse(localStorage.getItem("NSC_users")) || [];
+    let found = users.find(x => x.username===u && x.password===p);
 
-        users.push({ username: u, password: p });
-
-        localStorage.setItem("NSC_users", JSON.stringify(users));
-
-        alert("Account created!");
-        showPage("loginPage");
-    }
-
-    /* ===================== LOGIN ===================== */
-    function login() {
-        let u = document.getElementById("loginUser").value;
-        let p = document.getElementById("loginPass").value;
-
-        let users = JSON.parse(localStorage.getItem("NSC_users")) || [];
-
-        let user = users.find(x => x.username === u && x.password === p);
-
-        if (user) {
-            localStorage.setItem("NSC_currentUser", u);
-            loadDashboard();
-        } else {
-            alert("Invalid login");
-        }
-    }
-
-    /* ===================== RESET PASSWORD ===================== */
-    function resetPassword() {
-        let u = document.getElementById("fpUser").value;
-        let p = document.getElementById("fpPass").value;
-
-        let users = JSON.parse(localStorage.getItem("NSC_users")) || [];
-
-        let user = users.find(x => x.username === u);
-
-        if (!user) {
-            alert("User not found");
-            return;
-        }
-
-        user.password = p;
-
-        localStorage.setItem("NSC_users", JSON.stringify(users));
-
-        alert("Password updated");
-        showPage("loginPage");
-    }
-
-    /* ===================== LOAD DASHBOARD ===================== */
-    function loadDashboard() {
-        let currentUser = localStorage.getItem("NSC_currentUser");
-
-        if (!currentUser) {
-            showPage("loginPage");
-            return;
-        }
-
-        document.getElementById("userInfo").innerText = "User: " + currentUser;
-
-        showPage("dashboard");
-    }
-
-    /* ===================== FINANCE MODULE ===================== */
-    let financeData = JSON.parse(localStorage.getItem("NSC_finance")) || [];
-
-    function addFinance() {
-        let desc = document.getElementById("desc").value;
-        let amount = document.getElementById("amount").value;
-        let user = localStorage.getItem("NSC_currentUser");
-
-        financeData.push({ user, desc, amount });
-
-        localStorage.setItem("NSC_finance", JSON.stringify(financeData));
-
-        displayFinance();
-    }
-
-    function displayFinance() {
-        let list = document.getElementById("financeList");
-        list.innerHTML = "";
-
-        let user = localStorage.getItem("NSC_currentUser");
-
-        financeData
-        .filter(x => x.user === user)
-        .forEach(item => {
-            let li = document.createElement("li");
-            li.innerText = item.desc + " : " + item.amount;
-            list.appendChild(li);
-        });
-    }
-
-    /* ===================== LOGOUT ===================== */
-    function logout() {
-        localStorage.removeItem("NSC_currentUser");
-        showPage("loginPage");
-    }
-
-    /* ===================== AUTO START ===================== */
-    window.onload = function() {
+    if(found){
+        localStorage.setItem("currentUser", u);
         loadDashboard();
-        displayFinance();
-    };
+    } else {
+        alert("Invalid login");
+    }
+}
+
+// ================= LOAD DASHBOARD =================
+function loadDashboard(){
+    auth.style.display = "none";
+    dashboard.style.display = "block";
+
+    let user = localStorage.getItem("currentUser");
+    currentUser.innerText = user;
+
+    loadFinance();
+    loadPayments();
+}
+
+// ================= LOGOUT =================
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.reload();
+}
+
+// ================= NAVIGATION =================
+function show(section){
+    home.classList.add("hidden");
+    finance.classList.add("hidden");
+    payments.classList.add("hidden");
+
+    document.getElementById(section).classList.remove("hidden");
+}
+
+// ================= FINANCE =================
+let financeData = JSON.parse(localStorage.getItem("finance")) || [];
+
+function addFinance(){
+    let user = localStorage.getItem("currentUser");
+
+    financeData.push({
+        user:user,
+        desc:desc.value,
+        amount:amount.value
+    });
+
+    localStorage.setItem("finance", JSON.stringify(financeData));
+    loadFinance();
+}
+
+function loadFinance(){
+    let user = localStorage.getItem("currentUser");
+    financeList.innerHTML = "";
+
+    financeData.filter(x=>x.user===user).forEach(item=>{
+        let li = document.createElement("li");
+        li.innerText = item.desc + " : " + item.amount;
+        financeList.appendChild(li);
+    });
+}
+
+// ================= PAYMENTS =================
+const monthsList = [
+"January","February","March","April","May","June",
+"July","August","September","October","November","December"
+];
+
+let payments = JSON.parse(localStorage.getItem("payments")) || [];
+
+function loadPayments(){
+    let user = localStorage.getItem("currentUser");
+    months.innerHTML = "";
+
+    monthsList.forEach(m=>{
+        let paid = payments.find(p=>p.user===user && p.month===m);
+
+        let div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <b>${m}</b><br>
+            Status: <span style="color:${paid?'green':'red'}">
+            ${paid?'PAID':'PENDING'}
+            </span><br>
+            ${!paid ? `<button onclick="pay('${m}')">Pay</button>`:''}
+        `;
+
+        months.appendChild(div);
+    });
+}
+
+function pay(month){
+    alert("Dial *182*8*1*355613# to pay");
+
+    let user = localStorage.getItem("currentUser");
+
+    payments.push({
+        user:user,
+        month:month
+    });
+
+    localStorage.setItem("payments", JSON.stringify(payments));
+    loadPayments();
+}
+
+// ================= AUTO LOGIN =================
+if(localStorage.getItem("currentUser")){
+    loadDashboard();
+}
 
 </script>
 
