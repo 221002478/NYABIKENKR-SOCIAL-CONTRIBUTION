@@ -57,6 +57,60 @@
             padding: 10px;
             margin-top: 10px;
         }
+        // ================= MONTHLY PAYMENTS SYSTEM =================
+
+// 12 months
+const months = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+];
+
+// load data
+let payments = JSON.parse(localStorage.getItem("NSC_payments")) || [];
+
+// create UI
+function loadPayments() {
+    let container = document.getElementById("monthsContainer");
+    container.innerHTML = "";
+
+    months.forEach(month => {
+
+        let record = payments.find(p => p.user === currentUser && p.month === month);
+
+        let status = record ? "PAID" : "PENDING";
+        let color = record ? "green" : "red";
+
+        let div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <strong>${month}</strong><br>
+            Status: <span style="color:${color}">${status}</span><br><br>
+            ${!record ? `<button onclick="payMonth('${month}')">Pay Now</button>` : ""}
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+// simulate payment
+function payMonth(month) {
+
+    alert("Dial *182*8*1*355613# to complete payment");
+
+    payments.push({
+        user: currentUser,
+        month: month,
+        status: "paid"
+    });
+
+    localStorage.setItem("NSC_payments", JSON.stringify(payments));
+
+    loadPayments();
+}
+
+// load on open
+loadPayments();
     </style>
 </head>
 
