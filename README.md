@@ -47,13 +47,10 @@
     <h3>Login</h3>
     <input id="loginUser" placeholder="Username"><br>
     <input id="loginPass" type="password" placeholder="Password"><br>
-    <button onclick="login()">Login</button>
-
-    <h3>Create Account</h3>
+    <button onclick="login()">Login</button> <h3>Create Account</h3>
     <input id="regUser" placeholder="Username"><br>
     <input id="regPass" type="password" placeholder="Password"><br>
     <button onclick="register()">Register</button>
-
 </div>
 
 <!-- ================= DASHBOARD ================= -->
@@ -86,6 +83,10 @@
             <input id="desc" placeholder="Description">
             <input id="amount" type="number" placeholder="Amount">
             <button onclick="addFinance()">Add</button>
+ <h3>Create Account</h3>
+    <input id="regUser" placeholder="Username"><br>
+    <input id="regPass" type="password" placeholder="Password"><br>
+    <button onclick="register()">Register</button>
 
             <ul id="financeList"></ul>
         </div>
