@@ -1,7 +1,6 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <title>NSC - Nyabikenke Social Contribution</title>
+    <title>NYABIKENKE DISTRICT HOSPITAL</title>
 
     <style>
         body { font-family: Arial; margin:0; }
