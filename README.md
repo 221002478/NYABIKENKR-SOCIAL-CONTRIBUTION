@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>NYABIKENKE DISTRICT HOSPITAL</title>
+    <title>NYABIKENKe social case</title>
 
     <style>
         body { font-family: Arial; margin:0; }
